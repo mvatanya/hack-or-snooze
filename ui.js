@@ -8,13 +8,15 @@ $(async function() {
   const $ownStories = $("#my-articles");
   const $navLogin = $("#nav-login");
   const $navLogOut = $("#nav-logout");
+  const $navWelcome = $("#nav-welcome");
+  const $navSubmit = $("#nav-submit");
 
   // global storyList variable
   let storyList = null;
 
   // global currentUser variable
   let currentUser = null;
-
+  
   await checkIfLoggedIn();
 
   /**
@@ -90,6 +92,32 @@ $(async function() {
   });
 
   /**
+   * Event handler for clicking Submit nav button 
+   */
+  $navSubmit.on("click", function(){
+    $submitForm.slideToggle();
+  });
+
+  /**
+   * Event handler for submitting story form 
+   */
+  $submitForm.on("submit", async function(evt){
+
+    //story object to be passed to StoryList.addStory
+    //Grabs submit form values
+    let story = {
+      "author": $("#author").val(),
+      "title": $("#title").val(),
+      "url": $("#url").val()
+    }
+    //POST request to StoryList
+    let storySubmit = await StoryList.addStory(currentUser, story);
+
+    //Update HTML on top of the list
+    $("#all-articles-list").prepend(generateStoryHTML(storySubmit))
+  });
+
+  /**
    * On page load, checks local storage to see if the user is already logged in.
    * Renders page information accordingly.
    */
@@ -104,7 +132,6 @@ $(async function() {
     //  this is designed to run once, on page load
     currentUser = await User.getLoggedInUser(token, username);
     await generateStories();
-
     if (currentUser) {
       showNavForLoggedInUser();
     }
@@ -125,7 +152,7 @@ $(async function() {
 
     // show the stories
     $allStoriesList.show();
-
+    
     // update the navigation bar
     showNavForLoggedInUser();
   }
@@ -189,6 +216,7 @@ $(async function() {
   function showNavForLoggedInUser() {
     $navLogin.hide();
     $navLogOut.show();
+    $navWelcome.show();
   }
 
   /* simple function to pull the hostname from a URL */

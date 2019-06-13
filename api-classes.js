@@ -43,7 +43,7 @@ class StoryList {
    * Returns the new story object
    */
 
-  async addStory(user, newStory) {
+  static async addStory(user, newStory) {
     // TODO - Implement this functions!
     // this function should return the newly created story so it can be used in
     // the script.js file where it will be appended to the DOM
@@ -57,13 +57,6 @@ class StoryList {
 
   }
 }
-
-// curl -i \
-//      -H "Content-Type: application/json" \
-//      -X POST \
-//      -d '{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im12YXRhbnlhIiwiaWF0IjoxNTYwNDQ2NTUwfQ.92t4WT7YeJy5Io7DjQ95futlsPC4rUqoj6DMxCmci7U", 
-//      "story": {"author":"Marisa Vatanya","title":"Test", "url": "https://www.rithmschool.com"} }' \
-//       https://hack-or-snooze-v3.herokuapp.com/stories
 
 
 /**
