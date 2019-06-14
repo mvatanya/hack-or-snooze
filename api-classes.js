@@ -1,4 +1,5 @@
 const BASE_URL = "https://hack-or-snooze-v3.herokuapp.com";
+const TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im12YXRhbnlhIiwiaWF0IjoxNTYwNTM3NjkxfQ.o-V8-PdxvhZqxvrxfNmVGxB1UFwGEkwQenGl_Kz4N5U";
 
 /**
  * This class maintains the list of individual Story instances
@@ -159,7 +160,34 @@ class User {
     existingUser.ownStories = response.data.user.stories.map(s => new Story(s));
     return existingUser;
   }
+
+  //This function gets User's favorited stories, returns an array of stories
+  static async getUserFavoriteStories(username) {
+    const response = await axios.get(`${BASE_URL}/users/${username}`, {
+      params: {
+        token: TOKEN,
+      }
+    });
+  
+    // instantiate the user from the API information
+    const existingUser = new User(response.data.user);
+    // instantiate Story instances for the user's favorites stories
+    existingUser.favorites = response.data.user.favorites.map(s => new Story(s));
+
+    return existingUser.favorites;
+  }
+
+  // This function submits a POST request to add the selected story to the user favorites property
+  static async addToFavorites(username, storyID){
+    await axios.post(`${BASE_URL}/users/${username}/favorites/${storyID}`, {
+      token: TOKEN,
+    });
+  }
+  
+
+  // TODO: This function submits a DELETE request to remove the selected story from the user favorites property
 }
+
 
 /**
  * Class to represent a single story.

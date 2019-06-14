@@ -245,22 +245,25 @@ $(async function() {
     }
   }
 
-  $(".fa-star").on("click", function(){
+  $("body").on("click", ".fa-star", async  function(){
     //toggle star color
-    $(this).toggleClass("fas", "far");
-
+    $(this).toggleClass("fas");
     let selectedStoryID = $(this).parent().parent().attr("id");
+    let selectedLi = $(this).parent().parent();
 
-    addToFavorites(selectedStoryID);
-    //NEED TO WRITE REMOVE FUNCTION
-    //NEED TO FIGURE OUT HOW TO TOGGLE WITH STAR CLICK
+    //If star has class "fas", add to user favorites property and update HTML
+    if ($(this).hasClass("fas")){
+      await User.addToFavorites(currentUser.username,selectedStoryID);
+      addFavoriteToHtml(selectedLi);
+    } 
   });
 
+  $("#nav-favorites").on("click", function(){
+    $("#all-articles-list").hide();
+    $("#favorited-articles").show();
+  })
 
-  /* This function submits a POST request to add the selected story to the user favorites property*/
-  async function addToFavorites(storyID){
-    await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${storyID}`, {
-      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im12YXRhbnlhIiwiaWF0IjoxNTYwNDQ2NTUwfQ.92t4WT7YeJy5Io7DjQ95futlsPC4rUqoj6DMxCmci7U",
-    });
+  function addFavoriteToHtml(liElement){
+    liElement.clone().appendTo('#favorited-articles');
   }
 });
