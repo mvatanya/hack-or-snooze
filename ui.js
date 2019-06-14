@@ -106,15 +106,16 @@ $(async function() {
     //story object to be passed to StoryList.addStory
     //Grabs submit form values
     let story = {
-      "author": $("#author").val(),
-      "title": $("#title").val(),
-      "url": $("#url").val()
-    }
+      author: $("#author").val(),
+      title: $("#title").val(),
+      url: $("#url").val()
+    };
+
     //POST request to StoryList
     let storySubmit = await StoryList.addStory(currentUser, story);
 
     //Update HTML on top of the list
-    $("#all-articles-list").prepend(generateStoryHTML(storySubmit))
+    $("#all-articles-list").prepend(generateStoryHTML(storySubmit));
   });
 
   /**
@@ -187,6 +188,7 @@ $(async function() {
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
+      <span class="star"><i class="far fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -241,5 +243,24 @@ $(async function() {
       localStorage.setItem("token", currentUser.loginToken);
       localStorage.setItem("username", currentUser.username);
     }
+  }
+
+  $(".fa-star").on("click", function(){
+    //toggle star color
+    $(this).toggleClass("fas", "far");
+
+    let selectedStoryID = $(this).parent().parent().attr("id");
+
+    addToFavorites(selectedStoryID);
+    //NEED TO WRITE REMOVE FUNCTION
+    //NEED TO FIGURE OUT HOW TO TOGGLE WITH STAR CLICK
+  });
+
+
+  /* This function submits a POST request to add the selected story to the user favorites property*/
+  async function addToFavorites(storyID){
+    await axios.post(`${BASE_URL}/users/${currentUser.username}/favorites/${storyID}`, {
+      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im12YXRhbnlhIiwiaWF0IjoxNTYwNDQ2NTUwfQ.92t4WT7YeJy5Io7DjQ95futlsPC4rUqoj6DMxCmci7U",
+    });
   }
 });
