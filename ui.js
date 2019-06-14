@@ -184,11 +184,12 @@ $(async function() {
 
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
+    let starClass = checkForFavorites(story) ? "far" : "fas";
 
     // render story markup
     const storyMarkup = $(`
       <li id="${story.storyId}">
-      <span class="star"><i class="far fa-star"></i></span>
+      <span class="star"><i class="${starClass} fa-star"></i></span>
         <a class="article-link" href="${story.url}" target="a_blank">
           <strong>${story.title}</strong>
         </a>
@@ -249,21 +250,42 @@ $(async function() {
     //toggle star color
     $(this).toggleClass("fas");
     let selectedStoryID = $(this).parent().parent().attr("id");
-    let selectedLi = $(this).parent().parent();
 
-    //If star has class "fas", add to user favorites property and update HTML
+    //If star has class "fas", add to user favorites array
     if ($(this).hasClass("fas")){
       await User.addToFavorites(currentUser.username,selectedStoryID);
-      addFavoriteToHtml(selectedLi);
     } 
   });
 
   $("#nav-favorites").on("click", function(){
     $("#all-articles-list").hide();
     $("#favorited-articles").show();
+    showFavorites();
   })
 
-  function addFavoriteToHtml(liElement){
-    liElement.clone().appendTo('#favorited-articles');
+  async function showFavorites(){
+    let favoriteStories = await User.getUserFavoriteStories(currentUser.username);
+    $("#favorited-articles").empty();
+    for(let i = 0; i < favoriteStories.length; i++) {
+      let storyHTML = await generateStoryHTML(favoriteStories[i]);
+      $("#favorited-articles").append(storyHTML);
+    }
+    $('.fa-star').addClass('fas');
+  }
+
+  async function checkForFavorites(story){
+    //get favorite stories to compare
+    const favoriteStories = await User.getUserFavoriteStories(currentUser.username);
+
+    // Loop through user's favorite stories and check if their ID's
+    // match current stories being generated, then add 'fas' class
+    for (let i = 0; i < favoriteStories.length; i++){
+      if(story.storyId === favoriteStories[i].storyId){
+        console.log("Passed in story: " + story.storyId);
+        console.log("Favorite story: " + story.storyId);
+        return true;
+      }  
+    }
+    return false;
   }
 });
