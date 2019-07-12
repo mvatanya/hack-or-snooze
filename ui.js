@@ -184,7 +184,7 @@ $(async function() {
 
   function generateStoryHTML(story) {
     let hostName = getHostName(story.url);
-    let starClass = checkForFavorites(story) ? "far" : "fas";
+    let starClass = checkForFavorites(story) ? "fas" : "far";
 
     // render story markup
     const storyMarkup = $(`
@@ -272,17 +272,13 @@ $(async function() {
     }
     $('.fa-star').addClass('fas');
   }
-
-  async function checkForFavorites(story){
-    //get favorite stories to compare
-    const favoriteStories = await User.getUserFavoriteStories(currentUser.username);
-
-    // Loop through user's favorite stories and check if their ID's
-    // match current stories being generated, then add 'fas' class
-    for (let i = 0; i < favoriteStories.length; i++){
-      if(story.storyId === favoriteStories[i].storyId){
-        console.log("Passed in story: " + story.storyId);
-        console.log("Favorite story: " + story.storyId);
+  
+  // Loop through user's favorite stories and check if their ID's
+  // match current stories being generated, then add 'fas' class
+  function checkForFavorites(story){
+    for (let i = 0; i < currentUser.favorites.length; i++){
+      if(story.storyId === currentUser.favorites[i].storyId){
+        //console.log("checkForFavorites true", story.title, story.storyId === currentUser.favorites[i].storyId);
         return true;
       }  
     }
